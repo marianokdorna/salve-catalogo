@@ -1,14 +1,88 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec" />
-    <script>
-      window.location.href = "https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec";
-    </script>
-    <title>Catálogo de Productos de Salve de Vero</title>
-  </head>
-  <body>
-    <p>Redirigiendo al catálogo de productos...</p>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salve de Vero — Accesos</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: #fdeef5;
+      color: #222;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    .logo {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #be185d;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+    p {
+      color: #666;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+    }
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: transform 0.1s ease-in-out;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    .btn-primary {
+      background: #be185d;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #fff;
+      color: #be185d;
+      border: 2px solid #be185d;
+    }
+  </style>
+</head>
+<body>
+  <img
+    src="https://media.bio.site/sites/thmDAYhuXQgN9KvJZ2tyCh/xMEmbHiT5Ukg9siDtLm85D.png"
+    alt="Logo Salve de Vero"
+    class="logo"
+  />
+  <h1>Catálogo de Productos de Salve de Vero</h1>
+  <p>Seleccioná una sección para comenzar</p>
+
+  <div class="buttons">
+    <button
+      class="btn-primary"
+      onclick="window.location.href='https://script.google.com/macros/s/AKfycbyZsJ69uJsWC79epr6I6dPk4Oax6Af4AhB-BQpVL5tKKVqB2TXRm0zZZr33xDZE5w9S/exec'"
+    >
+      🪷 Catálogo
+    </button>
+    <button
+      class="btn-secondary"
+      onclick="window.location.href='https://script.google.com/macros/s/AKfycbyZsJ69uJsWC79epr6I6dPk4Oax6Af4AhB-BQpVL5tKKVqB2TXRm0zZZr33xDZE5w9S/exec?view=venta'"
+    >
+      💰 Ventas
+    </button>
+  </div>
+</body>
 </html>
