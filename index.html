@@ -56,6 +56,17 @@
     .error { color: #b91c1c; margin-top: 8px; font-size: 13px; }
     /* Oculto el app hasta pasar la clave */
     #app { display: none; }
+
+    /* === utilidades de visibilidad === */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Asegura que el app use su layout original */
+    #app {
+      display: block;
+    }
+   
   </style>
 </head>
 <body>
@@ -149,13 +160,22 @@
     }
 
     function openApp(){
-      gate.style.display = 'none';
-      app.style.display = 'flex';
+      gate.classList.add('hidden');         // oculta el gate
+      app.classList.remove('hidden');       // muestra el app
       app.setAttribute('aria-hidden', 'false');
+      // IMPORTANTE: no seteamos app.style.display = 'flex'
+      // así respetamos tu layout original y las tarjetas vuelven a su formato.
+}
     }
     function logout(){
       localStorage.removeItem('sv_auth');
-      location.reload();
+      // restauramos el estado inicial
+      app.classList.add('hidden');
+      gate.classList.remove('hidden');
+      app.setAttribute('aria-hidden', 'true');
+      pass.value = '';
+      pass.focus();
+}
     }
 
     btnEnter.addEventListener('click', tryLogin);
