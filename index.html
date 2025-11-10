@@ -66,7 +66,31 @@
     #app {
       display: block;
     }
-   
+  
+    /* === Corrección de centrado para el contenedor principal === */
+    #app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    /* Ajustes finos */
+    #app h1 {
+      margin: 8px 0;
+      font-size: 24px;
+      color: var(--brand);
+    }
+    #app p {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+    #app .logo {
+      margin-bottom: 12px;
+    }
+    
   </style>
 </head>
 <body>
