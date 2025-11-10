@@ -121,76 +121,86 @@
     <button class="logout" type="button" onclick="logout()">Salir</button>
   </div>
 
-  <script>
-   
+ <script>
+  // === CONFIGURÁ ACÁ EL HASH DE TU CLAVE ===
     const HASH_HEX = "9b743e2dbd571093eaca93dbd7adf6e3c9b1608b3bca2f0597e57e6ffa81c2b9";
 
-    const gate = document.getElementById('gate');
-    const app = document.getElementById('app');
-    const pass = document.getElementById('pass');
-    const btnEnter = document.getElementById('enter');
-    const btnClear = document.getElementById('clear');
-    const msg = document.getElementById('msg');
+  const gate = document.getElementById('gate');
+  const app = document.getElementById('app');
+  const pass = document.getElementById('pass');
+  const btnEnter = document.getElementById('enter');
+  const btnClear = document.getElementById('clear');
+  const msg = document.getElementById('msg');
 
-    function toHex(buffer){
-      return Array.from(new Uint8Array(buffer)).map(b=>b.toString(16).padStart(2,'0')).join('');
-    }
-    async function sha256(text){
-      const enc = new TextEncoder();
-      const buf = await crypto.subtle.digest('SHA-256', enc.encode(text));
-      return toHex(buf);
-    }
+  function toHex(buffer) {
+    return Array.from(new Uint8Array(buffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
 
-    async function tryLogin(){
-      msg.textContent = '';
-      const value = pass.value || '';
-      if (!value) { msg.textContent = 'Ingresá la clave.'; return; }
-      try {
-        const digest = await sha256(value);
-        if (digest === HASH_HEX) {
-          localStorage.setItem('sv_auth', 'ok');
-          openApp();
-        } else {
-          msg.textContent = 'Clave incorrecta.';
-          pass.select();
-        }
-      } catch (e) {
-        msg.textContent = 'Error al validar la clave.';
-      }
-    }
+  async function sha256(text) {
+    const enc = new TextEncoder();
+    const buf = await crypto.subtle.digest('SHA-256', enc.encode(text));
+    return toHex(buf);
+  }
 
-    function openApp(){
-      gate.classList.add('hidden');         // oculta el gate
-      app.classList.remove('hidden');       // muestra el app
-      app.setAttribute('aria-hidden', 'false');
-      // IMPORTANTE: no seteamos app.style.display = 'flex'
-      // así respetamos tu layout original y las tarjetas vuelven a su formato.
-}
+  async function tryLogin() {
+    msg.textContent = '';
+    const value = pass.value || '';
+    if (!value) {
+      msg.textContent = 'Ingresá la clave.';
+      return;
     }
-    function logout(){
-      localStorage.removeItem('sv_auth');
-      // restauramos el estado inicial
-      app.classList.add('hidden');
-      gate.classList.remove('hidden');
-      app.setAttribute('aria-hidden', 'true');
-      pass.value = '';
-      pass.focus();
-}
-    }
-
-    btnEnter.addEventListener('click', tryLogin);
-    btnClear.addEventListener('click', ()=>{ pass.value=''; pass.focus(); });
-    pass.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') tryLogin(); });
-
-    // Auto-login si ya validó antes
-    (function init(){
-      if (localStorage.getItem('sv_auth') === 'ok') {
+    try {
+      const digest = await sha256(value);
+      if (digest === HASH_HEX) {
+        localStorage.setItem('sv_auth', 'ok');
         openApp();
       } else {
-        gate.style.display = 'grid';
-        pass.focus();
+        msg.textContent = 'Clave incorrecta.';
+        pass.select();
       }
-    })();
-  </script>
+    } catch (e) {
+      msg.textContent = 'Error al validar la clave.';
+    }
+  }
+
+  // ✅ Muestra el sitio sin romper el layout
+  function openApp() {
+    gate.classList.add('hidden');
+    app.classList.remove('hidden');
+    app.setAttribute('aria-hidden', 'false');
+  }
+
+  // ✅ Cierra sesión y vuelve al login
+  function logout() {
+    localStorage.removeItem('sv_auth');
+    app.classList.add('hidden');
+    gate.classList.remove('hidden');
+    app.setAttribute('aria-hidden', 'true');
+    pass.value = '';
+    pass.focus();
+  }
+
+  btnEnter.addEventListener('click', tryLogin);
+  btnClear.addEventListener('click', () => {
+    pass.value = '';
+    pass.focus();
+  });
+  pass.addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryLogin();
+  });
+
+  // Auto-login si ya se validó antes
+  (function init() {
+    if (localStorage.getItem('sv_auth') === 'ok') {
+      openApp();
+    } else {
+      gate.classList.remove('hidden');
+      pass.focus();
+    }
+  })();
+</script>
+
 </body>
 </html>
