@@ -5,98 +5,172 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Salve de Vero — Accesos</title>
   <style>
+    :root {
+      --bg: #fdeef5;
+      --fg: #222;
+      --muted: #666;
+      --brand: #be185d;
+      --border: #eec7d8;
+      --card: #fff;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
+      margin: 0; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; background: var(--bg); color: var(--fg);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: #fdeef5;
-      color: #222;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      flex-direction: column;
     }
     .logo {
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 50%;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 120px; height: 120px; object-fit: cover; border-radius: 50%;
+      margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,.1);
     }
-    h1 {
-      color: #be185d;
-      font-size: 22px;
-      margin-bottom: 8px;
-    }
-    p {
-      color: #666;
-      margin-bottom: 24px;
-      font-size: 14px;
-    }
-    .buttons {
-      display: flex;
-      gap: 12px;
-    }
+    h1 { color: var(--brand); font-size: 22px; margin-bottom: 8px; }
+    p { color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+
+    .buttons { display: flex; gap: 12px; }
     button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: transform 0.1s ease-in-out;
+      padding: 12px 20px; border: none; border-radius: 12px; cursor: pointer;
+      font-weight: 600; font-size: 16px; transition: transform .1s ease-in-out;
     }
-    button:hover {
-      transform: scale(1.05);
+    button:hover { transform: scale(1.05); }
+    .btn-primary { background: var(--brand); color: #fff; }
+    .btn-secondary { background: #fff; color: var(--brand); border: 2px solid var(--brand); }
+    .logout { position: fixed; right: 12px; top: 12px; background: #fff; border: 2px solid var(--border); color: var(--brand); }
+
+    /* Gate (pantalla de clave) */
+    .gate {
+      position: fixed; inset: 0; display: grid; place-items: center; background: var(--bg);
     }
-    .btn-primary {
-      background: #be185d;
-      color: #fff;
+    .card {
+      background: var(--card); border: 2px solid var(--border); border-radius: 16px;
+      padding: 20px; width: min(92vw, 420px); box-shadow: 0 6px 24px rgba(190,24,93,.08);
     }
-    .btn-secondary {
-      background: #fff;
-      color: #be185d;
-      border: 2px solid #be185d;
+    .card h2 { margin: 0 0 10px; color: var(--brand); font-size: 20px; }
+    .card label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; }
+    .card input {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--border); background: #fff;
+      outline: none; font-size: 16px;
     }
+    .card input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(190,24,93,.15); }
+    .card .row { display: flex; gap: 8px; margin-top: 12px; }
+    .error { color: #b91c1c; margin-top: 8px; font-size: 13px; }
+    /* Oculto el app hasta pasar la clave */
+    #app { display: none; }
   </style>
 </head>
 <body>
-  <img
-    src="https://media.bio.site/sites/thmDAYhuXQgN9KvJZ2tyCh/xMEmbHiT5Ukg9siDtLm85D.png"
-    alt="Logo Salve de Vero"
-    class="logo"
-  />
-  <h1>Catálogo de Productos de Salve de Vero</h1>
-  <p>Seleccioná una sección para comenzar</p>
 
-<div class="buttons">
-  <button
-    class="btn-primary"
-    onclick="window.location.href='https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec'"
-  >
-    🪷 Catálogo
-  </button>
+  <!-- Pantalla de clave -->
+  <div id="gate" class="gate" aria-modal="true" role="dialog">
+    <div class="card">
+      <h2>Ingreso</h2>
+      <label for="pass">Ingresá la clave para continuar</label>
+      <input id="pass" type="password" placeholder="Clave" autocomplete="current-password" />
+      <div class="row">
+        <button id="enter" class="btn-primary" type="button">Entrar</button>
+        <button id="clear" class="btn-secondary" type="button">Limpiar</button>
+      </div>
+      <div id="msg" class="error" role="status" aria-live="polite"></div>
+    </div>
+  </div>
 
-  <button
-    class="btn-secondary"
-    onclick="window.location.href='https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec?view=venta'"
-  >
-    💰 Ventas
-  </button>
+  <!-- Contenido real (se muestra tras pasar la clave) -->
+  <div id="app" aria-hidden="true">
+    <img
+      src="https://media.bio.site/sites/thmDAYhuXQgN9KvJZ2tyCh/xMEmbHiT5Ukg9siDtLm85D.png"
+      alt="Logo Salve de Vero"
+      class="logo"
+    />
+    <h1>Catálogo de Productos de Salve de Vero</h1>
+    <p>Seleccioná una sección para comenzar</p>
 
-  <button
-    class="btn-secondary"
-    onclick="window.location.href='https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec?page=quick'"
-  >
-    ⚡ Carga rápida de stock
-  </button>
-  <button
-    class="btn-secondary"
-    onclick="window.location.href='https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec?page=quick-down'">
-    📦 Descarga rápida de stock
-</button>
-</div>
+    <div class="buttons">
+      <button
+        class="btn-primary"
+        onclick="window.location.href='https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec'">
+        🪷 Catálogo
+      </button>
+      <button
+        class="btn-secondary"
+        onclick="window.location.href='https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec?view=venta'">
+        💰 Ventas
+      </button>
+      <button
+        class="btn-secondary"
+        onclick="window.location.href='https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec?page=quick'">
+        ⚡ Carga rápida de stock
+      </button>
+      <button
+        class="btn-secondary"
+        onclick="window.location.href='https://script.google.com/macros/s/AKfycbwMq04f9QfbxK_3oR-mDUHP-jme3cbe6_3HHcE56fsRLw9vfHJDXrKY9fGX10jyk4FH/exec?page=quick-down'">
+        📦 Descarga rápida de stock
+      </button>
+    </div>
 
+    <button class="logout" type="button" onclick="logout()">Salir</button>
+  </div>
+
+  <script>
+   
+    const HASH_HEX = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+
+    const gate = document.getElementById('gate');
+    const app = document.getElementById('app');
+    const pass = document.getElementById('pass');
+    const btnEnter = document.getElementById('enter');
+    const btnClear = document.getElementById('clear');
+    const msg = document.getElementById('msg');
+
+    function toHex(buffer){
+      return Array.from(new Uint8Array(buffer)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+    async function sha256(text){
+      const enc = new TextEncoder();
+      const buf = await crypto.subtle.digest('SHA-256', enc.encode(text));
+      return toHex(buf);
+    }
+
+    async function tryLogin(){
+      msg.textContent = '';
+      const value = pass.value || '';
+      if (!value) { msg.textContent = 'Ingresá la clave.'; return; }
+      try {
+        const digest = await sha256(value);
+        if (digest === HASH_HEX) {
+          localStorage.setItem('sv_auth', 'ok');
+          openApp();
+        } else {
+          msg.textContent = 'Clave incorrecta.';
+          pass.select();
+        }
+      } catch (e) {
+        msg.textContent = 'Error al validar la clave.';
+      }
+    }
+
+    function openApp(){
+      gate.style.display = 'none';
+      app.style.display = 'flex';
+      app.setAttribute('aria-hidden', 'false');
+    }
+    function logout(){
+      localStorage.removeItem('sv_auth');
+      location.reload();
+    }
+
+    btnEnter.addEventListener('click', tryLogin);
+    btnClear.addEventListener('click', ()=>{ pass.value=''; pass.focus(); });
+    pass.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') tryLogin(); });
+
+    // Auto-login si ya validó antes
+    (function init(){
+      if (localStorage.getItem('sv_auth') === 'ok') {
+        openApp();
+      } else {
+        gate.style.display = 'grid';
+        pass.focus();
+      }
+    })();
+  </script>
 </body>
 </html>
